@@ -23,7 +23,6 @@ EFFECTS = [
 
 effect_index = 0
 
-
 def apply_effect(roi, name):
     # roi = region of interest 
     if name == "none":
@@ -82,52 +81,24 @@ def apply_effect(roi, name):
 
     return roi
 
-    #probably a bit too complicated but looks pretty cool i guess
-    #nested for loop is too slow
-    """
-    elif name == "halftone":
-        gray = cv2.cvtColor(roi, cv2.COLOR_BGR2GRAY)
-        h2, w2 = gray.shape
-        out = np.zeros_like(roi)
-        step = 8
-        for y in range(0, h2, step):
-            for x in range(0, w2, step):
-                patch = gray[y :y + step, x :x + step]
-                if patch.size == 0:
-                    continue
-                val=int(np.mean(patch))
-                radius = int((1 - val / 255) * (step // 2))
-                cx,cy = x + step //2,y + step // 2
-                cv2.circle(out, (cx, cy), radius, (220, 220, 220), -1)
-        return out
-
-    """
-
+    #removed halftone effect as a nested for loop was too slow
     
-
-
-
 # Gesture helpers 
 
 def wrist_pos(hand_landmarks, w, h):
     lm = hand_landmarks.landmark[mp_hands.HandLandmark.WRIST] 
     return int(lm.x * w), int(lm.y * h) # normalise
 
-
 def index_tip(hand_landmarks, w, h):
     lm = hand_landmarks.landmark[mp_hands.HandLandmark.INDEX_FINGER_TIP] # built in functions 
     return int(lm.x * w), int(lm.y * h)
-
 
 def thumb_tip(hand_landmarks, w, h):
     lm = hand_landmarks.landmark[mp_hands.HandLandmark.THUMB_TIP]
     return int(lm.x * w), int(lm.y * h)
 
-
 def dist(p1, p2):
     return np.hypot(p1[0] - p2[0], p1[1] - p2[1]) 
-
-
 # State
 pinch_state = {0: False, 1: False} #per hand
 pinch_cooldown = 0.0
@@ -136,16 +107,13 @@ pinch_cooldown = 0.0
 PINCH_THRESHOLD = 40 # px – index and thumb this close = pinch
 
 # Helpers
-
 def next_effect():
     global effect_index 
     effect_index = (effect_index + 1) % len(EFFECTS)
 
-
 def overlay_text(frame, text, pos, scale=0.6, color=(255, 255, 255), thickness=1):
     cv2.putText(frame, text, pos, cv2.FONT_HERSHEY_SIMPLEX, scale, (0, 0, 0), thickness + 2) # should really have more fonts
     cv2.putText(frame, text, pos, cv2.FONT_HERSHEY_SIMPLEX, scale, color, thickness)
-
 
 # Main loop
 video = cv2.VideoCapture(0)
@@ -169,7 +137,7 @@ while True:
 
     if results.multi_hand_landmarks:
         for lm in results.multi_hand_landmarks:
-            wx, wy = wrist_pos(lm, w, h)
+            wx, wy = wrist_pos(lm, w, h) 
             ix, iy = index_tip(lm, w, h)
             tx, ty = thumb_tip(lm, w, h)
             wrists.append((wx, wy))
@@ -189,9 +157,7 @@ while True:
             y2 = min(h, y2 + pad)
             if (x2 - x1) > 40 and (y2 - y1) > 40:
                 rect = (x1, y1, x2, y2)
-
-        #clap detection removed effect switching now via pinch or SPACE
-
+                
         #pinch detection
         for i, (_, (ix, iy), (tx, ty)) in enumerate(hand_data[:2]): #change variable names to be more readable
             pinched_now = dist((ix, iy), (tx, ty)) < PINCH_THRESHOLD
@@ -199,10 +165,6 @@ while True:
                 next_effect()
                 pinch_cooldown = now + 0.6 # change to not hard coded
             pinch_state[i] = pinched_now
-
-        
-   
-
     #apply effect inside rectangl
     display = frame.copy()
 
@@ -231,7 +193,6 @@ while True:
     overlay_text(display, f"Effect: {effect_name}", (12, 30), scale=0.7, color=(0, 220, 180))
     overlay_text(display, f"[{effect_index + 1}/{len(EFFECTS)}]", (12, 58), scale=0.5, color=(180, 180, 180))
     overlay_text(display, "SPACE: cycle | Q: quit", (12, h - 14), scale=0.45, color=(160, 160, 160))
-
    
     cv2.imshow("Hand Canvas", display)
 
