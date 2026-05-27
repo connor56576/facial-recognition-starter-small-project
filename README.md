@@ -1,2 +1,97 @@
-Starter project using MediaPipe to apply filters using hand and finger detection within a webcam or camera. Able to cycle between custom effects ( 7 so far ) by pinching fingers together, and a bounding box is applied as the area of the effect. 
-The size of the bounding box is controlled by the distance between hands as opposite corners of the rectangle, and is able to be change in real time as hands move around. 
+# Facial Recognition Starter Small Project
+
+Interactive computer vision project using Python, OpenCV, and MediaPipe to apply real time visual effects inside a hand gesture controlled region on a webcam.
+
+The application detects hands and finger positions using MediaPipe, allowing the user to dynamically create and resize an effect area using both hands. Effects can be cycled in real time using pinch gestures.
+Features
+
+- Real time webcam processing
+- Hand and finger tracking using MediaPipe
+- Pinch controlled effect switching
+- Dynamic bounding box resizing using hand positions
+- Multiple custom OpenCV visual effects
+- Fullscreen interactive display
+
+
+Current Effects
+
+- None
+- Glitch
+- Chromatic Aberration
+- Sketch
+- Thermal Vision
+- Cartoon
+- Invert
+
+
+How It Works
+
+- Two wrists are used as opposite corners of a rectangle.
+- The rectangle becomes the effect region.
+- Any selected visual filter is applied only inside this region.
+- Pinching the thumb and index finger together cycles to the next effect.
+- The rectangle updates in real time as hands move.
+
+Technologies Used
+
+- Python
+- OpenCV
+- MediaPipe
+- NumPy
+
+ Installation
+
+1. Clone the repository
+
+```bash
+git clone https://github.com/connor56576/facial-recognition-starter-small-project.git
+cd facial-recognition-starter-small-project
+```
+
+2. Create a virtual environment
+
+```bash
+python -m venv venv
+```
+
+Activate the environment:
+
+Windows (Git Bash)
+
+```bash
+source venv/Scripts/activate
+```
+Windows (CMD)
+
+```bash
+venv\Scripts\activate
+```
+
+3. Install dependencies
+
+```bash
+pip install -r requirements.txt
+```
+
+Running the Project
+
+```bash
+python main.py
+```
+
+## Future Improvements
+
+- FPS counter
+- Additional visual effects
+- Modular effect system
+- Face recognition integration
+- GPU acceleration
+- Custom gesture mapping
+- Save or load presets
+- YOLO 
+
+ Notes
+
+This project was built primarily as an starter computer vision project using OpenCV and MediaPipe.
+
+Many of the effects were created experimentally to explore different image manipulation techniques and performance tradeoffs in live video processing.
