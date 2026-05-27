@@ -1,0 +1,2 @@
+Starter project using MediaPipe to apply filters using hand and finger detection within a webcam or camera. Able to cycle between custom effects ( 7 so far ) by pinching fingers together, and a bounding box is applied as the area of the effect. 
+The size of the bounding box is controlled by the distance between hands as opposite corners of the rectangle, and is able to be change in real time as hands move around. 
