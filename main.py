@@ -2,6 +2,12 @@ import cv2
 import mediapipe as mp
 import numpy as np
 import time
+from effects import HandEffects
+
+fx = HandEffects()
+EFFECTS = fx.effect_list
+
+
 
 
 # Mediapipe setup 
@@ -24,66 +30,7 @@ EFFECTS = [
 
 effect_index = 0
 
-def apply_effect(roi, name):
-    # roi = region of interest 
-    if name == "none":
-        return roi
-    #custom effects. Can really do whatever you want
-    #alot of these effects are me just messing around with opencv functions to see what looks cool
-    elif name == "glitch": 
-        out = roi.copy()
-        h = roi.shape[0] 
-        for _ in range(6):
-            y = np.random.randint(0, max(1, h - 4)) 
-            thickness = np.random.randint(2, 6)
-            shift = np.random.randint(-20, 20)
-            strip = out[y : y + thickness].copy()
-            out[y : y + thickness] = np.roll(strip, shift, axis=1)
-        #colour channel swap
-        out[:, :, 0], out[:, :, 2] = out[:, :, 2].copy(), out[:, :, 0].copy()
-        return out
 
-    elif name == "chromatic":
-        b, g, r = cv2.split(roi)
-        shift = 6
-        M_r = np.float32([[1, 0, shift], [0, 1, 0]]) 
-        M_b = np.float32([[1, 0, -shift], [0, 1, 0]])
-
-
-        h2, w2 = roi.shape[:2] #
-        r = cv2.warpAffine(r, M_r, (w2, h2)) #
-        b = cv2.warpAffine(b, M_b, (w2, h2))
-        return cv2.merge([b, g, r])
-
-    elif name == "sketch":
-        gray = cv2.cvtColor(roi, cv2.COLOR_BGR2GRAY) 
-        inv = cv2.bitwise_not(gray)
-        blur = cv2.GaussianBlur(inv, (21, 21), 0)
-        sketch = cv2.divide(gray, cv2.bitwise_not(blur), scale=256) 
-        return cv2.cvtColor(sketch, cv2.COLOR_GRAY2BGR)
-
-    #this ones my favourite
-    elif name == "thermal":
-        gray = cv2.cvtColor(roi, cv2.COLOR_BGR2GRAY)
-        norm = cv2.equalizeHist(gray)
-        return cv2.applyColorMap(norm, cv2.COLORMAP_JET)
-    
-    elif name == "cartoon":
-        gray = cv2.cvtColor(roi, cv2.COLOR_BGR2GRAY)
-        blur = cv2.medianBlur(gray, 5)
-        edges = cv2.adaptiveThreshold(
-            blur, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY, 9, 9
-        )
-        color = cv2.bilateralFilter(roi, 9, 300, 300)
-        return cv2.bitwise_and(color, color, mask=edges)
-    
-    elif name == "invert":
-        return cv2.bitwise_not(roi)
-
-    return roi
-
-    #removed halftone effect as a nested for loop was too slow
-    
 # Gesture helpers 
 
 def wrist_pos(hand_landmarks, w, h):
@@ -105,7 +52,7 @@ pinch_state = {0: False, 1: False} #per hand
 pinch_cooldown = 0.0
 
 
-PINCH_THRESHOLD = 40 # px – index and thumb this close = pinch
+PINCH_THRESHOLD = 15 # px – index and thumb this close = pinch
 
 # Helpers
 def next_effect():
@@ -140,7 +87,7 @@ while True:
     wrists = []
     hand_data = [] # list of (wrist_xy, index_xy, thumb_xy)
 
-    if results.multi_hand_landmarks:
+    if results.multi_hand_landmarks: 
         for lm in results.multi_hand_landmarks:
             wx, wy = wrist_pos(lm, w, h) 
             ix, iy = index_tip(lm, w, h)
@@ -160,9 +107,9 @@ while True:
             y1 = max(0, y1 - pad)
             x2 = min(w, x2 + pad)
             y2 = min(h, y2 + pad)
-            if (x2 - x1) > 40 and (y2 - y1) > 40:
-                rect = (x1, y1, x2, y2)
-                
+            if (x2 - x1) > 40 and (y2 - y1) > 40: 
+                rect = (x1, y1, x2, y2) # ####################
+                    
         #pinch detection
         for i, (_, (ix, iy), (tx, ty)) in enumerate(hand_data[:2]): #change variable names to be more readable
             pinched_now = dist((ix, iy), (tx, ty)) < PINCH_THRESHOLD
@@ -177,7 +124,7 @@ while True:
         x1, y1, x2, y2 = rect
         roi = frame[y1:y2, x1:x2].copy()
         if roi.size > 0:
-            processed = apply_effect(roi, EFFECTS[effect_index])
+            processed = fx.apply(roi, EFFECTS[effect_index])
             display[y1:y2, x1:x2] = processed
 
         # draw rectangle border
