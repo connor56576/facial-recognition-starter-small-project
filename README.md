@@ -2,6 +2,8 @@
 
 <img width="1760" height="1045" alt="image" src="https://github.com/user-attachments/assets/a6979900-715c-408c-a0c4-fdfc0db135de" />
 <img width="1765" height="1048" alt="image" src="https://github.com/user-attachments/assets/451332e2-36b8-44db-802c-d1437d773163" />
+<img width="795" height="496" alt="image" src="https://github.com/user-attachments/assets/274809e9-540b-4abf-9d0d-d1b3e3ef93bc" />
+
 
 
 Interactive computer vision project using Python, OpenCV, and MediaPipe to apply real time visual effects inside a hand gesture controlled region on a webcam.
