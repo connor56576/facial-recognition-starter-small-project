@@ -3,6 +3,7 @@ import mediapipe as mp
 import numpy as np
 import time
 
+
 # Mediapipe setup 
 mp_hands = mp.solutions.hands
 hands = mp_hands.Hands(
@@ -120,6 +121,8 @@ video = cv2.VideoCapture(0)
 cv2.namedWindow("Hand Canvas", cv2.WINDOW_NORMAL)
 cv2.setWindowProperty("Hand Canvas", cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
 
+prev_time = time.time()
+
 while True:
     success, frame = video.read()
     if not success:
@@ -130,7 +133,9 @@ while True:
     rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
     results = hands.process(rgb)
     now = time.time()
-
+    fps = (1.0 / max(now - prev_time, 1e-6)) #avoids div by zero
+    prev_time = now
+ 
     rect = None # the rectangle this frame
     wrists = []
     hand_data = [] # list of (wrist_xy, index_xy, thumb_xy)
@@ -192,6 +197,7 @@ while True:
     effect_name = EFFECTS[effect_index].upper()
     overlay_text(display, f"Effect: {effect_name}", (12, 30), scale=0.7, color=(0, 220, 180))
     overlay_text(display, f"[{effect_index + 1}/{len(EFFECTS)}]", (12, 58), scale=0.5, color=(180, 180, 180))
+    overlay_text(display, f"FPS: {fps:.1f}", (w - 120, 30), scale=0.7, color=(0, 220, 180))
     overlay_text(display, "SPACE: cycle | Q: quit", (12, h - 14), scale=0.45, color=(160, 160, 160))
    
     cv2.imshow("Hand Canvas", display)
