@@ -26,7 +26,8 @@ EFFECTS = [
     "sketch",
     "thermal",
     "cartoon",
-    "invert",]
+    "invert",
+    "pixelated",]
 
 effect_index = 0
 
@@ -185,6 +186,7 @@ while True:
     overlay_text(display, f"Effect: {effect_name}", (12, 30), scale=0.7, color=(0, 220, 180))
     overlay_text(display, f"[{effect_index + 1}/{len(EFFECTS)}]", (12, 58), scale=0.5, color=(180, 180, 180))
     overlay_text(display, f"FPS: {fps:.1f}", (w - 120, 30), scale=0.7, color=(0, 220, 180))
+    overlay_text(display, "PINCH: cycle", (12, h - 40), scale=0.45, color=(180, 180, 180))
     overlay_text(display, "SPACE: cycle | Q: quit", (12, h - 14), scale=0.45, color=(160, 160, 160))
     #debug
     # overlay_text(display, "missing frames: " + str(missing_frames), (w - 150, h - 14), scale=0.45, color=(160, 160, 160))

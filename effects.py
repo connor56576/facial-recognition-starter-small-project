@@ -11,7 +11,8 @@ class HandEffects:
             "sketch": self._sketch,
             "thermal": self._thermal,
             "cartoon": self._cartoon,
-            "invert": self._invert
+            "invert": self._invert,
+            "pixelated": self._pixelated,
         }
         self.effect_list = list(self.effects_map.keys())
 
@@ -75,3 +76,26 @@ class HandEffects:
 
     def _invert(self, roi):
         return cv2.bitwise_not(roi)
+    
+    def _pixelated(self, roi): #new favourite effect
+        h, w = roi.shape[:2] #dimensions of hand area
+
+        #controls pixel intensity
+        scale = max(4, int(min(w, h) / 25)) #the smaller the hand area the less pixelated 
+
+        # Downscaled size
+        small_w=max(1, w // scale)
+        small_h=max(1, h // scale)
+
+        #shrink image
+        small = cv2.resize( roi,(small_w, small_h),
+            interpolation=cv2.INTER_LINEAR
+        )
+
+        #scale back up
+        pixelated = cv2.resize(small, (w, h),
+            interpolation=cv2.INTER_NEAREST
+        )
+
+
+        return pixelated
