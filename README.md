@@ -85,7 +85,8 @@ python main.py
 
 ## Future Improvements
 
-- FPS counter
+- FPS counter (Done)
+- Interface
 - Additional visual effects
 - Modular effect system
 - Face recognition integration
