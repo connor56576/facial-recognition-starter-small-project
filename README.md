@@ -17,6 +17,7 @@ Features
 - Dynamic bounding box resizing using hand positions
 - Multiple custom OpenCV visual effects
 - Fullscreen interactive display
+- Multiple Effect groups including filters and a whiteboard
 
 
 Current Effects
@@ -28,15 +29,22 @@ Current Effects
 - Thermal Vision
 - Cartoon
 - Invert
+- Draw
+- Erase
 
 
-How It Works
-
+How It Works 
+Filters
 - Two wrists are used as opposite corners of a rectangle.
 - The rectangle becomes the effect region.
 - Any selected visual filter is applied only inside this region.
 - Pinching the thumb and index finger together cycles to the next effect.
 - The rectangle updates in real time as hands move.
+
+Whiteboard
+- Index finger is used as the pen to draw in the camera display
+- Pinching between index finger and thumb switches the mode to erase and back
+- Holding index and middle finger up will put the pen up, as to not draw continuously
 
 Technologies Used
 
