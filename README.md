@@ -89,8 +89,8 @@ python main.py
 
 - FPS counter (Done)
 - Interface
-- Additional visual effects
-- Modular effect system
+- Additional visual effects (Doing)
+- Modular effect system (Done)
 - Face recognition integration
 - GPU acceleration
 - Custom gesture mapping
