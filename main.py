@@ -2,6 +2,7 @@ import cv2
 import mediapipe as mp
 import time
 from effect_groups.hand_effects import HandEffectGroup
+from effect_groups.whiteboard_effects import WhiteboardEffects
 
 # Mediapipe setup 
 mp_hands = mp.solutions.hands
@@ -10,7 +11,8 @@ hands = mp_hands.Hands(
     min_detection_confidence=0.7,
     min_tracking_confidence=0.6,
 )
-
+#face effects 
+# generate mesh of facial landmakrs visibly, and be abel to pull at them to stretch the face. 
 class EffectManager: 
     """
     Manages multiple effect groups and their effects. Keeps track of the current group and effect, and provides methods to switch between them.
@@ -49,7 +51,7 @@ def overlay_text(frame, text, pos, scale=0.6, color=(255, 255, 255), thickness=1
     cv2.putText(frame, text, pos, cv2.FONT_HERSHEY_SIMPLEX, scale, (0, 0, 0), thickness + 2) # should really have more fonts
     cv2.putText(frame, text, pos, cv2.FONT_HERSHEY_SIMPLEX, scale, color, thickness)
 
-fx = EffectManager({"hand": HandEffectGroup()}) #instance of effectmanager
+fx = EffectManager({"hand": HandEffectGroup(), "whiteboard": WhiteboardEffects()}) #instance of effectmanager
 
 # Main loop
 video = cv2.VideoCapture(0)
@@ -74,7 +76,7 @@ while True:
     group = fx.current_group()
 
     gesture_data = group.process_landmarks(results, frame.shape)
-    if group.update(gesture_data, now):
+    if group.update(gesture_data, now, fx.current_effect()):
         fx.next_effect()
 
     display = group.process_frame(frame, fx.current_effect())
@@ -86,17 +88,23 @@ while True:
     overlay_text(display, f"Effect: {effect_name}", (12, 86), scale=0.7, color=(0, 220, 180))
     overlay_text(display, f"[{fx.effect_index + 1}/{len(group.effect_list)}]", (12, 114), scale=0.5, color=(180, 180, 180))
     overlay_text(display, f"FPS: {fps:.1f}", (w - 120, 30), scale=0.7, color=(0, 220, 180))
-    overlay_text(display, "PINCH: cycle", (12, h - 40), scale=0.45, color=(180, 180, 180))
-    overlay_text(display, "SPACE: cycle | Q: quit", (12, h - 14), scale=0.45, color=(160, 160, 160))
+    overlay_text(display, "G: switch group", (12, h- 66), scale=0.45, color=(180, 180, 180))
+    overlay_text(display, "PINCH: cycle effect", (12, h - 40), scale=0.45, color=(180, 180, 180))
+    overlay_text(display, "SPACE: cycle effect | Q: quit", (12, h - 14), scale=0.45, color=(160, 160, 160))
+    if fx.current_group_name() == "whiteboard": # only show group specific controls when in that group, since the hand effects dont really have any controls
+        overlay_text(display, "PEN UP: index + middle finger up", (w - 400, h - 14), scale=0.45, color=(180, 180, 180))
     #debug
     # overlay_text(display, "missing frames: " + str(missing_frames), (w - 150, h - 14), scale=0.45, color=(160, 160, 160))
     cv2.imshow("Effects", display)
 
     key = cv2.waitKey(1) & 0xFF 
-    if key == ord("q") or cv2.getWindowProperty("Effects", cv2.WND_PROP_VISIBLE) < 1:
+    if key == ord("q") or key == ord("Q") or cv2.getWindowProperty("Effects", cv2.WND_PROP_VISIBLE) < 1:
         break
     if key == ord(" "): #space to skip
         fx.next_effect()
+
+    if key == ord("g") or key == ord("G"): #g to switch group
+        fx.next_group()
 
 video.release()
 cv2.destroyAllWindows()

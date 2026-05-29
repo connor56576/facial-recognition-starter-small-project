@@ -60,7 +60,7 @@ class HandEffectGroup(BaseEffectGroup):
         self._gesture_data = {"hands": hands}
         return self._gesture_data
 
-    def update(self, gesture_data, now):
+    def update(self, gesture_data, now, effect_name):
         """return true if pinch """
         advance = False
 
